@@ -55,7 +55,7 @@ Let's say you want to then be able to make the `isOpen` state value stateless by
 const isOpen = `isOpen` in props ? props.isOpen : state.isOpen;
 ```
 
-This can get tedious to do for every single piece of state you want to implement this pattern. You could write your own abstractiosn that automate this, or you could use `react-ctrl`.
+This can get tedious to do for every single piece of state you want to implement this pattern for. You could write your own abstractions that automate this, or you could use `react-ctrl`.
 
 ## Usage
 
