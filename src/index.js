@@ -34,11 +34,17 @@ function getOverriddenState(comp: any) {
 }
 
 export default (Base: any = Component) => {
+  const defaultState = getDefaultProps(Base);
+
   // We must declare the class and return it separately.
   // See: https://github.com/developit/microbundle/issues/76.
   class A extends Base {
     _state: Object;
-    _state = getDefaultProps(Base);
+
+    constructor(props: Object) {
+      super(props);
+      this._state = defaultState;
+    }
 
     // $FlowFixMe - unsafe getter
     get state(): Object {
