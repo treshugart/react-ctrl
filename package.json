@@ -1,0 +1,41 @@
+{
+  "devDependencies": {
+    "babel-jest": "^22.0.3",
+    "jest": "^22.0.3"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": ["./node_modules"]
+  },
+  "scripts": {
+    "prepublish": "microbundle",
+    "test": "jest"
+  },
+  "name": "react-ctrl",
+  "version": "0.0.0",
+  "description":
+    "A higher-order-component for authoring components that can be both stateful and stateless for certain props, using the controlled / uncontrolled pattern.",
+  "main": "src/index.js",
+  "dependencies": {
+    "conartist": "^0.15.1",
+    "microbundle": "^0.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/treshugart/react-ctrl.git"
+  },
+  "author": "Trey Shugart <treshugart@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/treshugart/react-ctrl/issues"
+  },
+  "homepage": "https://github.com/treshugart/react-ctrl#readme",
+  "keywords": [
+    "react",
+    "controlled",
+    "uncontrolled",
+    "stateful",
+    "stateless",
+    "props",
+    "state"
+  ]
+}
