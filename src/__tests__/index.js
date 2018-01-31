@@ -6,21 +6,31 @@ import withCtrl from "..";
 
 const { expect, test } = global;
 
+type Props = {
+  defaultProp: string
+};
+
+type State = {
+  prop: string
+};
+
 const Comp = withCtrl(
-  class extends Component<any, { prop: string }> {
-    constructor(props) {
-      super(props);
-      this.state = {
-        prop: props.prop || ""
-      };
-    }
+  class extends Component<Props, State> {
+    static defaultProps = {
+      defaultProp: "default"
+    };
     render() {
       return <div>{this.state.prop}</div>;
     }
   }
 );
 
-test("overides state with props", () => {
+test("pulls the default state value from defaultProps", () => {
+  const wrapper = mount(<Comp />);
+  expect(wrapper.text()).toBe("default");
+});
+
+test("overides default props with props", () => {
   const wrapper = mount(<Comp prop="test" />);
   expect(wrapper.text()).toBe("test");
 });
