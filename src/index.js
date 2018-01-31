@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from "react";
+import { Component } from "react";
 
 // This is similar to { ...state, ...props } but it doesn't
 // include prop values that aren't in the current state.
@@ -12,7 +12,9 @@ function getOverriddenState(props: Object, state: Object) {
 }
 
 export default (Base: any = Component) => {
-  return class extends Base<any, any> {
+  // We must declare the class and return it separately.
+  // See: https://github.com/developit/microbundle/issues/76.
+  class A extends Base<any, any> {
     // $FlowFixMe - unsafe getter
     get state() {
       return getOverriddenState(this.props, this._state || {});
@@ -21,5 +23,6 @@ export default (Base: any = Component) => {
     set state(state) {
       this._state = state;
     }
-  };
+  }
+  return A;
 };
