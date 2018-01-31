@@ -11,7 +11,7 @@ function getOverriddenState(props: Object, state: Object) {
   }, {});
 }
 
-export const withValue = (Base: any = Component) => {
+export default (Base: any = Component) => {
   return class extends Base<any, any> {
     // $FlowFixMe - unsafe getter
     get state() {

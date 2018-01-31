@@ -1,9 +1,12 @@
 {
   "devDependencies": {
     "babel-jest": "^22.0.3",
-    "jest": "^22.0.3",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "jest": "^22.0.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
