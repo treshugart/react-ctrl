@@ -1,1 +1,2 @@
-// This is the main entry point.
+
+//# sourceMappingURL=index.js.map
