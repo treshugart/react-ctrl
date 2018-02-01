@@ -2,6 +2,17 @@
 
 import { Component } from "react";
 
+// Microbundle doesn't support object spreading.
+function assign(...args) {
+  const obj = {};
+  args.forEach(arg => {
+    Object.keys(arg || {}).forEach(key => {
+      obj[key] = arg[key];
+    });
+  });
+  return obj;
+}
+
 // Formats a defalut prop name using the React-convention
 // for defaultValue. For example, defaultValue -> value.
 function getStateNameFromDefaultPropName(name: string): string | void {
@@ -13,11 +24,11 @@ function getStateNameFromDefaultPropName(name: string): string | void {
 
 // Returns a default state object from default props.
 function getDefaultProps(comp: any) {
-  const { defaultProps } = comp;
-  return Object.keys(defaultProps).reduce((prev, next) => {
+  const { constructor, props } = comp;
+  return Object.keys(props).reduce((prev, next) => {
     const stateName = getStateNameFromDefaultPropName(next);
-    if (stateName && next in defaultProps) {
-      prev[stateName] = defaultProps[next];
+    if (stateName) {
+      prev[stateName] = props[next];
     }
     return prev;
   }, {});
@@ -34,8 +45,6 @@ function getOverriddenState(comp: any) {
 }
 
 export default (Base: any = Component) => {
-  const defaultState = getDefaultProps(Base);
-
   // We must declare the class and return it separately.
   // See: https://github.com/developit/microbundle/issues/76.
   class A extends Base {
@@ -43,7 +52,7 @@ export default (Base: any = Component) => {
 
     constructor(props: Object) {
       super(props);
-      this._state = defaultState;
+      this._state = assign(this._state, getDefaultProps(this));
     }
 
     // $FlowFixMe - unsafe getter
