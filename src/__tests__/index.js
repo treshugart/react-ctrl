@@ -1,8 +1,11 @@
 // @flow
 
-import { mount } from "enzyme";
-import React, { Component, Fragment } from "react";
-import withCtrl from "..";
+import map, {
+  getStateNameFromDefaultPropName,
+  mapper,
+  mapDefaultPropsToState,
+  mapPropsToState
+} from "..";
 
 const { expect, test } = global;
 
@@ -14,47 +17,81 @@ type State = {
   prop: string
 };
 
-test("pulls the default state value from defaultProps", () => {
-  const Comp = withCtrl(
-    class extends Component<Props, State> {
-      static defaultProps = {
-        defaultProp: "default"
-      };
-      render() {
-        return <div>{this.state.prop}</div>;
-      }
-    }
-  );
-  const wrapper = mount(<Comp />);
-  expect(wrapper.text()).toBe("default");
+test("getStateNameFromDefaultPropName", () => {
+  expect(getStateNameFromDefaultPropName("def")).toBe(null);
+  expect(getStateNameFromDefaultPropName("default")).toBe(null);
+  expect(getStateNameFromDefaultPropName("defaultP")).toBe("p");
+  expect(getStateNameFromDefaultPropName("defaultPropName")).toBe("propName");
 });
 
-test("overides default props with props", () => {
-  const Comp = withCtrl(
-    class extends Component<Props, State> {
-      static defaultProps = {
-        defaultProp: "default"
-      };
-      render() {
-        return <div>{this.state.prop}</div>;
-      }
-    }
-  );
-  const wrapper = mount(<Comp prop="test" />);
-  expect(wrapper.text()).toBe("test");
+test("mapDefaultPropsToState", () => {
+  expect(
+    mapDefaultPropsToState({
+      def: 1,
+      default: 2,
+      defaultP: 3,
+      defaultPropName: 4
+    })
+  ).toMatchObject({
+    p: 3,
+    propName: 4
+  });
 });
 
-test("user-defined default overrides component-defined default", () => {
-  const Comp = withCtrl(
-    class extends Component<Props, State> {
-      state = {
-        prop: "default"
-      };
-      render() {
-        return <div>{this.state.prop}</div>;
+test("mapPropsToState", () => {
+  expect(
+    mapPropsToState(
+      {
+        prop: true,
+        shouldNotBeInState: false
+      },
+      {
+        prop: false,
+        state: true
       }
+    )
+  ).toMatchObject({
+    prop: true,
+    state: true
+  });
+});
+
+test("map", () => {
+  expect(
+    map({
+      props: {
+        defaultProp: "props.defaultProp",
+        defaultState: "props.defaultState",
+        prop: "props.prop",
+        shouldNotBeInState: "props.shouldNotBeInState"
+      },
+      state: {
+        prop: "state.prop",
+        state: "state.state"
+      }
+    })
+  ).toMatchObject({
+    prop: "props.prop",
+    state: "props.defaultState"
+  });
+});
+
+test("mapper", () => {
+  const customMap = mapper({
+    mapDefaultPropsToState() {
+      return { defaultProp: true };
+    },
+    mapPropsToState() {
+      return { prop: true };
     }
-  );
-  const wrapper = mount(<Comp defaultProp="test" />);
-  expect(wrapper.text()).toBe("test");
+  });
+  expect(customMap({})).toMatchObject({
+    defaultProp: true,
+    prop: true
+  });
+});
+
+test("sanity", () => {
+  map({});
+  mapper()({});
 });

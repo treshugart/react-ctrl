@@ -17,12 +17,8 @@
     "react-dom": "^16.2.0"
   },
   "jest": {
-    "setupFiles": [
-      "./jest/setup-enzyme"
-    ],
-    "modulePathIgnorePatterns": [
-      "./node_modules"
-    ]
+    "setupFiles": ["./jest/setup-enzyme"],
+    "modulePathIgnorePatterns": ["./node_modules"]
   },
   "scripts": {
     "test": "jest && npm run build",
@@ -32,17 +28,13 @@
     "build": "microbundle",
     "prepublish": "npm run build"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
   "source": "src/index.js",
-  "peerDependencies": {
-    "react": "^16.2.0"
-  },
   "name": "react-ctrl",
-  "description": "A higher-order-component for authoring components that can be both stateful and stateless for certain props, using the controlled / uncontrolled pattern.",
+  "description":
+    "A set of functions for authoring components that can be both stateful and stateless for certain props, using the controlled / uncontrolled pattern.",
   "dependencies": {
     "conartist": "^0.15.1",
     "nodent": "^3.1.5"
