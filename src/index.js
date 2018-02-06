@@ -44,11 +44,8 @@ export function mapDefaultPropsToState(props: Object) {
 
 // Maps the current props into a state object that is merged with the current
 // state.
-export function mapPropsToState(props: Object, state: Object): Object {
-  return Object.keys(state).reduce((prev, next) => {
-    prev[next] = next in props ? props[next] : state[next];
-    return prev;
-  }, {});
+export function mapPropsToState(props: Object): Object {
+  return props;
 }
 
 const defs = {
@@ -59,10 +56,8 @@ const defs = {
 export function mapper(opts?: Options): Mapper {
   const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
   return ({ props, state }: Mappable) => {
-    const defaults = mapDefaultPropsToState(props || {});
-    props = assign(defaults, props);
-    state = assign(defaults, state);
-    return assign(state, mapPropsToState(props, state));
+    props = props || {};
+    return assign(state, mapDefaultPropsToState(props), mapPropsToState(props));
   };
 }
 

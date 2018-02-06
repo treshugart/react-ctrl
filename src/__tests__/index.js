@@ -39,21 +39,8 @@ test("mapDefaultPropsToState", () => {
 });
 
 test("mapPropsToState", () => {
-  expect(
-    mapPropsToState(
-      {
-        prop: true,
-        shouldNotBeInState: false
-      },
-      {
-        prop: false,
-        state: true
-      }
-    )
-  ).toMatchObject({
-    prop: true,
-    state: true
-  });
+  const obj = {};
+  expect(mapPropsToState(obj)).toBe(obj);
 });
 
 test("map", () => {
@@ -63,7 +50,7 @@ test("map", () => {
         defaultProp: "props.defaultProp",
         defaultState: "props.defaultState",
         prop: "props.prop",
-        shouldNotBeInState: "props.shouldNotBeInState"
+        shouldBeInMerged: "props.shouldBeInMerged"
       },
       state: {
         prop: "state.prop",
@@ -72,7 +59,8 @@ test("map", () => {
     })
   ).toMatchObject({
     prop: "props.prop",
-    state: "props.defaultState"
+    state: "props.defaultState",
+    shouldBeInMerged: "props.shouldBeInMerged"
   });
 });
 

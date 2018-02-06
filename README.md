@@ -10,6 +10,10 @@ npm install react-ctrl
 
 ## Why
 
+Managing controlled / uncontrolled values can be tedious, and maintaining the duplication between stateful and stateless components can be exhausting.
+
+## An example
+
 An example of a common pattern is a controlled input that takes `value` plus an `onChange` handler, or an uncontrolled one that takes `defaultValue`. By default React implements this for native controls, however, we often write custom controls and repeat this logic manually.
 
 ```js
@@ -35,6 +39,9 @@ class Input extends Component {
 With `react-ctrl`, we can use the `map()` function to automatically map `props` to `state`, including props that are explicitly passed as default `props` to the component like `defaultValue`.
 
 ```js
+import React, { Component } from "react";
+import map from "react-ctrl";
+
 class Input extends Component {
   state = {
     value: ""
@@ -54,10 +61,14 @@ class Input extends Component {
 Notice the diff:
 
 ```js
++ import map from 'react-ctrl';
+
+// ...
+
 - value: this.props.defaultValue || ""
 + value: ""
 
-// and
+// ...
 
 - const { props, state } = this;
 - const value = "value" in props ? props.value : state.value;
@@ -68,8 +79,8 @@ Both of these components can be used like:
 
 ```js
 <Input />
-<Input defaultValue="yay" />
-<Input value="yay" />
+<Input defaultValue="yay" onChange={fn} />
+<Input value="yay" onChange={fn} />
 ```
 
 However, we've saved a bit of effort and conventionalised the controlled / uncontrolled pattern in the process. This adds up in more complex components where you do this with multiple values.
