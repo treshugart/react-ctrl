@@ -68,8 +68,10 @@ Both of these components can be used like:
 
 ```js
 <Input />
-<Input defaultValue={'yay'} />
-<Input value={'yay'} />
+<Input defaultValue="yay" />
+<Input value="yay" />
 ```
 
 However, we've saved a bit of effort and conventionalised the controlled / uncontrolled pattern in the process. This adds up in more complex components where you do this with multiple values.
+
+What's nice about this is that you end up only really having to worry about defining your default state and then calling `map()` where you want everything to be properly merged together. You don't have to worry about mapping default props, props and the order they should be in to give you the correct values.
