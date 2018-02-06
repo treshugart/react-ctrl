@@ -45,7 +45,7 @@ export function mapDefaultPropsToState(props: Object) {
 // Maps the current props into a state object that is merged with the current
 // state.
 export function mapPropsToState(props: Object): Object {
-  return props;
+  return assign(props);
 }
 
 const defs = {

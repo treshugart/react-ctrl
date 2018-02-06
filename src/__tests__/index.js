@@ -9,14 +9,6 @@ import map, {
 
 const { expect, test } = global;
 
-type Props = {
-  defaultProp: string
-};
-
-type State = {
-  prop: string
-};
-
 test("getStateNameFromDefaultPropName", () => {
   expect(getStateNameFromDefaultPropName("def")).toBe(null);
   expect(getStateNameFromDefaultPropName("default")).toBe(null);
@@ -39,8 +31,9 @@ test("mapDefaultPropsToState", () => {
 });
 
 test("mapPropsToState", () => {
-  const obj = {};
-  expect(mapPropsToState(obj)).toBe(obj);
+  const obj = { test: true };
+  expect(mapPropsToState(obj)).not.toBe(obj);
+  expect(mapPropsToState(obj)).toMatchObject(obj);
 });
 
 test("map", () => {
