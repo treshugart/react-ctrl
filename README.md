@@ -78,6 +78,8 @@ Notice the diff:
 - const value = "value" in props ? props.value : state.value;
 + const { value } = this.state;
 
+// ...
+
 - export default Input;
 + export default withCtrl(Input);
 ```
