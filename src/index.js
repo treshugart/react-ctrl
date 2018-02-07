@@ -1,14 +1,7 @@
 // @flow
 
-type Mappable = {
-  props?: Object,
-  state?: Object
-};
-
-type Mapper = Mappable => Object;
-
 type Options = {
-  mapDefaultPropsToState?: Object => Object,
+  mapDefaultPropsToProps?: Object => Object,
   mapPropsToState?: (Object, Object) => Object
 };
 
@@ -32,7 +25,7 @@ export function getStateNameFromDefaultPropName(name: string): string | null {
 }
 
 // Maps default props to their state counterparts.
-export function mapDefaultPropsToState(props: Object) {
+export function mapDefaultPropsToProps(props: Object) {
   return Object.keys(props).reduce((prev, next) => {
     const stateName = getStateNameFromDefaultPropName(next);
     if (stateName) {
@@ -44,21 +37,46 @@ export function mapDefaultPropsToState(props: Object) {
 
 // Maps the current props into a state object that is merged with the current
 // state.
-export function mapPropsToState(props: Object): Object {
-  return assign(props);
+export function mapPropsToState(props: Object, state: Object): Object {
+  return Object.keys(state).reduce((prev, curr) => {
+    prev[curr] = curr in props ? props[curr] : state[curr];
+    return prev;
+  }, {});
 }
 
-const defs = {
-  mapDefaultPropsToState,
+// Default HOC options.
+const defs: Options = {
+  mapDefaultPropsToProps,
   mapPropsToState
 };
 
-export function mapper(opts?: Options): Mapper {
+export default function(Comp: any, opts?: Object): Class<any> {
   const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
-  return ({ props, state }: Mappable) => {
-    props = props || {};
-    return assign(state, mapDefaultPropsToState(props), mapPropsToState(props));
+  return class extends Comp {
+    __state: Object;
+    constructor(props: Object) {
+      super(props);
+
+      // Default props only override state on construction, so we map the
+      // defaults to their corresponding prop names, using the default values.
+      const mappedDefaultProps = mapDefaultPropsToProps(props);
+
+      // When we apply default state, we also want it to be mapped, otherwise
+      // you have to put your mapping logic in two spots. This is why we map
+      // the defaultProps to props first, then use the mapped result as the
+      // props to map to the state.
+      const mappedProps = mapPropsToState(mappedDefaultProps, this.__state);
+
+      // The initial mapped state is a result of any existing state merged with
+      // the mapped defaultProps / props.
+      this.__state = assign(this.__state, mappedProps);
+    }
+    get state(): Object {
+      const { props, __state } = this;
+      return assign(__state, mapPropsToState(props, __state));
+    }
+    set state(state: Object) {
+      this.__state = state;
+    }
   };
 }
-
-export default mapper();
