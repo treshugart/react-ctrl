@@ -75,8 +75,7 @@ export default function(Comp: any, opts?: Object): Class<any> {
 
   // Flow complains about getters and setters, so we use defineProperty to get
   // around it.
-  // $FlowFixMe - https://github.com/facebook/flow/issues/285
-  Object.defineProperty(Temp.prototype, 'state', {
+  Object.defineProperty(Temp.prototype, 'state', ({
     configurable: true,
     get(): Object {
       const { props, __state } = this;
@@ -85,7 +84,7 @@ export default function(Comp: any, opts?: Object): Class<any> {
     set(state: Object) {
       this.__state = state;
     }
-  });
+  }: Object));
 
   return Temp;
 }
