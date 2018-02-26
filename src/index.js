@@ -52,7 +52,7 @@ const defs: Options = {
 
 export default function(Comp: any, opts?: Object): Class<any> {
   const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
-  return class extends Comp {
+  class Temp extends Comp {
     __state: Object;
     constructor(props: Object) {
       super(props);
@@ -71,12 +71,21 @@ export default function(Comp: any, opts?: Object): Class<any> {
       // the mapped defaultProps / props.
       this.__state = assign(this.__state, mappedProps);
     }
-    get state(): Object {
+  };
+
+  // Flow complains about getters and setters, so we use defineProperty to get
+  // around it.
+  // $FlowFixMe - https://github.com/facebook/flow/issues/285
+  Object.defineProperty(Temp.prototype, 'state', {
+    configurable: true,
+    get(): Object {
       const { props, __state } = this;
       return assign(__state, mapPropsToState(props, __state));
-    }
-    set state(state: Object) {
+    },
+    set(state: Object) {
       this.__state = state;
     }
-  };
+  });
+
+  return Temp;
 }
