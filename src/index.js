@@ -1,8 +1,11 @@
 // @flow
 
 type Options = {
-  mapDefaultPropsToProps?: Object => Object,
-  mapPropsToState?: (Object, Object) => Object
+  mapDefaultPropsToProps: Object => Object,
+  mapPropsToState: (Object, Object) => Object,
+  /* If not null, restricts only props in whitelist to be mapped to state.
+     Note that only state names need to be passed in, not default prop names. */
+  propsWhitelist: string[] | null
 };
 
 // Microbundle doesn't support object spreading.
@@ -16,7 +19,21 @@ function assign(...args) {
   return obj;
 }
 
-// Formats a defalut prop name using the React-convention for defaultValue. For
+// Filter props to only those in whitelist
+function filterProps(props: Object, whitelist: string[] | null) {
+  const obj = {};
+  if (whitelist === null) {
+    return props;
+  }
+  whitelist.forEach( name => {
+    if (props.hasOwnProperty(name)) {
+      obj[name] = props[name];
+    }
+  });
+  return obj;
+}
+
+// Formats a default prop name using the React-convention for defaultValue. For
 // example, defaultValue -> value.
 export function getStateNameFromDefaultPropName(name: string): string | null {
   return name.length > 7 && name.indexOf("default") === 0
@@ -47,11 +64,12 @@ export function mapPropsToState(props: Object, state: Object): Object {
 // Default HOC options.
 const defs: Options = {
   mapDefaultPropsToProps,
-  mapPropsToState
+  mapPropsToState,
+  propsWhitelist: null
 };
 
 export default function(Comp: any, opts?: Object): Class<any> {
-  const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
+  const { mapDefaultPropsToState, mapPropsToState, propsWhitelist } = assign(defs, opts);
   class Temp extends Comp {
     __state: Object;
     constructor(props: Object) {
@@ -61,11 +79,16 @@ export default function(Comp: any, opts?: Object): Class<any> {
       // defaults to their corresponding prop names, using the default values.
       const mappedDefaultProps = mapDefaultPropsToProps(props);
 
+      // Filter the mapped default props based on the props whitelist so only props in the whitelist
+      // are mapped to state. This is done after mapping default props so that we don't have to add
+      // both props and defaultProps to the props whitelist.
+      const filteredDefaultProps = filterProps(mappedDefaultProps, propsWhitelist);
+
       // When we apply default state, we also want it to be mapped, otherwise
       // you have to put your mapping logic in two spots. This is why we map
       // the defaultProps to props first, then use the mapped result as the
       // props to map to the state.
-      const mappedProps = mapPropsToState(mappedDefaultProps, this.__state);
+      const mappedProps = mapPropsToState(filteredDefaultProps, this.__state);
 
       // The initial mapped state is a result of any existing state merged with
       // the mapped defaultProps / props.
@@ -78,7 +101,8 @@ export default function(Comp: any, opts?: Object): Class<any> {
   Object.defineProperty(Temp.prototype, 'state', ({
     configurable: true,
     get(): Object {
-      const { props, __state } = this;
+      const { props: allProps, __state } = this;
+      const props = filterProps(allProps, propsWhitelist);
       return assign(__state, mapPropsToState(props, __state));
     },
     set(state: Object) {
