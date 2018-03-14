@@ -68,7 +68,7 @@ test("withCtrl", () => {
   expect(comp3.state()).toEqual({ value: "prop" });
 });
 
-test("customWithCtrl", () => {
+test("customMapPropsToStateWithCtrl", () => {
   type Props = {
     defaultValue?: string,
     value?: string
@@ -107,4 +107,37 @@ test("customWithCtrl", () => {
   expect(comp1.state()).toEqual({ value1: "state1", value2: "state2" });
   expect(comp2.state()).toEqual({ value1: "default1", value2: "default2" });
   expect(comp3.state()).toEqual({ value1: "prop1", value2: "prop2" });
+});
+
+test("customPropsWhitelistWithCtrl", () => {
+  type Props = {
+    defaultValue?: string,
+    value?: string,
+  };
+  type State = {
+    value: string,
+    commonPropName: string,
+  };
+  const Comp = withCtrl(
+    class extends Component<Props, State> {
+      state = {
+        value: "state1",
+        commonPropName: "state2",
+      };
+      render() {
+        return <div />;
+      }
+    },
+    {
+      propsWhitelist: ['value']
+    }
+  );
+
+  const comp1 = mount(<Comp />);
+  const comp2 = mount(<Comp defaultValue="default1" defaultCommonPropName="default2" />);
+  const comp3 = mount(<Comp value="prop1" commonPropName="prop2" />);
+
+  expect(comp1.state()).toEqual({ value: "state1", commonPropName: "state2" });
+  expect(comp2.state()).toEqual({ value: "default1", commonPropName: "state2" });
+  expect(comp3.state()).toEqual({ value: "prop1", commonPropName: "state2" });
 });

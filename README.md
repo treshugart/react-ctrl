@@ -25,7 +25,7 @@ class Input extends Component {
   };
   onChange = e => {
     const { value } = e.target;
-    this.onChange(value);
+    this.props.onChange(value);
     this.setState({ value });
   };
   render() {
@@ -50,7 +50,7 @@ class Input extends Component {
   };
   onChange = e => {
     const { value } = e.target;
-    this.onChange(value);
+    this.props.onChange(value);
     this.setState({ value });
   };
   render() {
