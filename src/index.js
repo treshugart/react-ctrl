@@ -1,5 +1,5 @@
 // @flow
-import { Component } from "react";
+import { type Component } from "react";
 
 type Options = {
   mapDefaultPropsToProps?: Object => Object,
