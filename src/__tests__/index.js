@@ -41,10 +41,10 @@ test("mapPropsToState", () => {
 });
 
 test("withCtrl", () => {
-  type Props = {
+  type Props = {|
     defaultValue?: string,
     value?: string
-  };
+  |};
   type State = {
     value: string
   };

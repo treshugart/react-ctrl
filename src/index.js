@@ -1,4 +1,5 @@
 // @flow
+import { Component } from "react";
 
 type Options = {
   mapDefaultPropsToProps?: Object => Object,
@@ -50,11 +51,14 @@ const defs: Options = {
   mapPropsToState
 };
 
-export default function(Comp: any, opts?: Object): Class<any> {
+export default function<Props: {}, State: {}>(
+  Comp: Class<Component<Props, State>>,
+  opts?: Object
+): Class<Component<Props, State>> {
   const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
   class Temp extends Comp {
-    __state: Object;
-    constructor(props: Object) {
+    __state: State;
+    constructor(props: Props) {
       super(props);
 
       // Default props only override state on construction, so we map the
@@ -69,22 +73,26 @@ export default function(Comp: any, opts?: Object): Class<any> {
 
       // The initial mapped state is a result of any existing state merged with
       // the mapped defaultProps / props.
-      this.__state = assign(this.__state, mappedProps);
+      this.__state = ((assign(this.__state, mappedProps): any): State);
     }
-  };
+  }
 
   // Flow complains about getters and setters, so we use defineProperty to get
   // around it.
-  Object.defineProperty(Temp.prototype, 'state', ({
-    configurable: true,
-    get(): Object {
-      const { props, __state } = this;
-      return assign(__state, mapPropsToState(props, __state));
-    },
-    set(state: Object) {
-      this.__state = state;
-    }
-  }: Object));
+  Object.defineProperty(
+    Temp.prototype,
+    "state",
+    ({
+      configurable: true,
+      get(): State {
+        const { props, __state } = this;
+        return ((assign(__state, mapPropsToState(props, __state)): any): State);
+      },
+      set(state: State) {
+        this.__state = state;
+      }
+    }: Object)
+  );
 
   return Temp;
 }
