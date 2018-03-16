@@ -10,8 +10,9 @@
     "babel-preset-stage-0": "^6.24.1",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.1",
-    "flow-bin": "^0.64.0",
+    "flow-bin": "^0.68.0",
     "flow-copy-source": "^1.3.0",
+    "glow": "^1.2.2",
     "jest": "^22.0.3",
     "microbundle": "^0.4.3",
     "react": "^16.2.0",
@@ -29,7 +30,7 @@
     ]
   },
   "scripts": {
-    "test": "jest && npm run build",
+    "test": "jest && glow && npm run build",
     "build:es": "BABEL_ENV=es babel src --out-dir es",
     "build:esnext": "BABEL_ENV=esnext babel src --out-dir esnext",
     "build:node": "BABEL_ENV=node babel src --out-dir node",
