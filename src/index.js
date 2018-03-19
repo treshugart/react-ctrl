@@ -1,5 +1,5 @@
 // @flow
-import { type Component } from "react";
+import { Component, type ComponentType } from "react";
 
 type Options = {
   mapDefaultPropsToProps?: Object => Object,
@@ -45,54 +45,46 @@ export function mapPropsToState(props: Object, state: Object): Object {
   }, {});
 }
 
-// Default HOC options.
-const defs: Options = {
-  mapDefaultPropsToProps,
-  mapPropsToState
+type Props = {
+  children: Function,
+  component: Object,
+  mapDefaultPropsToProps: Object => Object,
+  mapPropsToState: (Object, Object) => Object
 };
 
-export default function<Props: {}, State: {}>(
-  Comp: Class<Component<Props, State>>,
-  opts?: Object
-): Class<Component<Props, State>> {
-  const { mapDefaultPropsToState, mapPropsToState } = assign(defs, opts);
-  class Temp extends Comp {
-    __state: State;
-    constructor(props: Props) {
-      super(props);
+type State = {};
 
-      // Default props only override state on construction, so we map the
-      // defaults to their corresponding prop names, using the default values.
-      const mappedDefaultProps = mapDefaultPropsToProps(props);
-
-      // When we apply default state, we also want it to be mapped, otherwise
-      // you have to put your mapping logic in two spots. This is why we map
-      // the defaultProps to props first, then use the mapped result as the
-      // props to map to the state.
-      const mappedProps = mapPropsToState(mappedDefaultProps, this.__state);
-
-      // The initial mapped state is a result of any existing state merged with
-      // the mapped defaultProps / props.
-      this.__state = ((assign(this.__state, mappedProps): any): State);
-    }
+export default class extends Component<Props, State> {
+  static defaultProps = {
+    mapDefaultPropsToProps,
+    mapPropsToState
+  };
+  initialState: Object = {};
+  isInitiallyRendered: boolean = false;
+  constructor(props: Props) {
+    super(props);
+    const { component } = props;
+    const mappedDefaultProps = this.props.mapDefaultPropsToProps(
+      component.props
+    );
+    const mappedProps = this.props.mapPropsToState(
+      mappedDefaultProps,
+      component.state
+    );
+    this.initialState = assign(component.state, mappedProps);
   }
+  render() {
+    let { props, state = {} } = this.props.component;
 
-  // Flow complains about getters and setters, so we use defineProperty to get
-  // around it.
-  Object.defineProperty(
-    Temp.prototype,
-    "state",
-    ({
-      configurable: true,
-      get(): State {
-        const { props, __state } = this;
-        return ((assign(__state, mapPropsToState(props, __state)): any): State);
-      },
-      set(state: State) {
-        this.__state = state;
-      }
-    }: Object)
-  );
+    if (this.isInitiallyRendered) {
+      state = assign(this.initialState, state);
+    } else {
+      state = assign(state, this.initialState);
+      this.isInitiallyRendered = true;
+    }
 
-  return Temp;
+    return this.props.children(
+      assign(state, this.props.mapPropsToState(props, state))
+    );
+  }
 }
