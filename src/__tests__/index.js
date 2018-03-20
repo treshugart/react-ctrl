@@ -89,9 +89,8 @@ test("customWithCtrl", () => {
   }
 
   class Comp extends Component<Props, State> {
-    state = {
-      value1: "state1",
-      value2: "state2"
+    static defaultProps = {
+      defaultValue: "state1 state2"
     };
     render() {
       return (
