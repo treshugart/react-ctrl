@@ -1,8 +1,6 @@
 # react-ctrl
 
-ReactCtrl is a higher-order component that automates the tedium of mapping props to state for stateless / controlled / uncontrolled behaviour from a statefull component.
-
-It's based on the React programming model and API, but it can be used with anything that has `props` and `state` like Preact.
+ReactCtrl is a component that automates the tedium of mapping props to state for stateless / controlled / uncontrolled behaviour from a stateful component.
 
 ```
 npm install react-ctrl
@@ -38,13 +36,13 @@ class Input extends Component {
 export default Input;
 ```
 
-With `react-ctrl`, we simply wrap our component with the HOC to automatically map `props` to `state`, including props that are explicitly passed as default `props` to the component like `defaultValue`.
+With `react-ctrl`, we simply wrap render logic with it, passing in the `props` and `state` we want it to control, including props that are explicitly passed as default `props` to the component like `defaultValue`.
 
 ```js
 import React, { Component } from "react";
-import withCtrl from "react-ctrl";
+import Ctrl from "react-ctrl";
 
-class Input extends Component {
+export default class extends Component {
   state = {
     value: ""
   };
@@ -54,34 +52,15 @@ class Input extends Component {
     this.setState({ value });
   };
   render() {
-    const { value } = this.state;
-    return <input onChange={this.onChange} value={value} />;
+    return (
+      <Ctrl data={this}>
+        (mapped => (
+        <input onChange={this.onChange} value={mapped.value} />
+        ))
+      </Ctrl>
+    );
   }
 }
-
-export default withCtrl(Input);
-```
-
-Notice the diff:
-
-```js
-+ import withCtrl from 'react-ctrl';
-
-// ...
-
-- value: this.props.defaultValue || ""
-+ value: ""
-
-// ...
-
-- const { props, state } = this;
-- const value = "value" in props ? props.value : state.value;
-+ const { value } = this.state;
-
-// ...
-
-- export default Input;
-+ export default withCtrl(Input);
 ```
 
 Both of these components can be used like:
@@ -95,3 +74,7 @@ Both of these components can be used like:
 However, we've saved a bit of effort and conventionalised the controlled / uncontrolled pattern in the process. This adds up in more complex components where you do this with multiple values.
 
 What's nice about this is that you end up only really having to worry about defining your default state and then accessing it where you want everything to be properly merged together. You don't have to worry about mapping default props, props and the order they should be in to give you the correct values.
+
+## Flow types
+
+This component takes care of the flow typing and even infers the `mapped` props from both your `props` and `state` types, so you don't have to worry about annotating inside the render prop. Just make sure you type your host component and things will just work.
