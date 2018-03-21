@@ -2,7 +2,6 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-jest": "^22.0.3",
-    "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
@@ -10,14 +9,11 @@
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "flow-bin": "^0.68.0",
-    "flow-copy-source": "^1.3.0",
     "glow": "^1.2.2",
     "jest": "^22.0.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12",
-    "webpack-node-externals": "^1.6.0"
+    "zeropack": "0.0.0"
   },
   "peerDependencies": {
     "react": "^16.2.0"
@@ -32,12 +28,12 @@
   },
   "scripts": {
     "test": "jest && glow && npm run prepublish",
-    "prepublish": "webpack --mode production && flow-copy-source -v -i '**/__tests__/**' src dist"
+    "prepublish": "zeropack"
   },
   "files": [
     "dist"
   ],
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "name": "react-ctrl",
   "description": "A component for mapping default props and props to state to streamline the controlled / uncontrolled component pattern.",
   "dependencies": {
