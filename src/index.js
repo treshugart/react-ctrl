@@ -1,17 +1,6 @@
 // @flow
 
-import React, { Component, type ComponentType, type Node } from "react";
-
-// Microbundle doesn't support object spreading.
-function assign<A: {}, B: {}>(a: A, b: B): { ...$Exact<A>, ...$Exact<B> } {
-  const obj = {};
-  [a, b].forEach(arg => {
-    for (const key in arg) {
-      obj[key] = arg[key];
-    }
-  });
-  return obj;
-}
+import { Component, type Node } from "react";
 
 // Formats a defalut prop name using the standard React convention for default
 // props: defaultValue -> value.
@@ -54,7 +43,7 @@ export function mapPropsToState<A: {}, B: {}>(
   props: A,
   state: B
 ): { ...$Exact<A>, ...$Exact<B> } {
-  return assign(state, props);
+  return { ...state, ...props };
 }
 
 type Props<P: {}, S: {}, V: {}, Z: {}> = {
@@ -88,14 +77,15 @@ export default class<P: {}, S: {}, V: {}, Z: {}> extends Component<
     let { props, state } = this.props.data;
 
     if (this.__isInitiallyRendered) {
-      state = assign(this.__initialState, state);
+      state = { ...this.__initialState, ...state };
     } else {
-      state = assign(state, this.__initialState);
+      state = { ...state, ...this.__initialState };
       this.__isInitiallyRendered = true;
     }
 
-    return this.props.children(
-      assign(state, this.props.mapPropsToState(props, state))
-    );
+    return this.props.children({
+      ...state,
+      ...this.props.mapPropsToState(props, state)
+    });
   }
 }

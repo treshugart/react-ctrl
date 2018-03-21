@@ -2,9 +2,8 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-jest": "^22.0.3",
+    "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2016": "^6.24.1",
-    "babel-preset-es2017": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
@@ -14,9 +13,11 @@
     "flow-copy-source": "^1.3.0",
     "glow": "^1.2.2",
     "jest": "^22.0.3",
-    "microbundle": "^0.4.3",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-node-externals": "^1.6.0"
   },
   "peerDependencies": {
     "react": "^16.2.0"
@@ -30,19 +31,15 @@
     ]
   },
   "scripts": {
-    "test": "jest && glow && npm run build",
-    "build": "microbundle && npm run build:flow",
-    "build:flow": "flow-copy-source -v -i '**/__tests__/**' src dist && cp -rf dist/index.js.flow dist/index.umd.js.flow",
-    "prepublish": "npm run build"
+    "test": "jest && glow && npm run prepublish",
+    "prepublish": "webpack --mode production && flow-copy-source -v -i '**/__tests__/**' src dist"
   },
   "files": [
     "dist"
   ],
-  "main": "dist/index.umd.js",
-  "module": "dist/index.js",
-  "source": "src/index.js",
+  "main": "dist/main.js",
   "name": "react-ctrl",
-  "description": "A set of functions for authoring components that can be both stateful and stateless for certain props, using the controlled / uncontrolled pattern.",
+  "description": "A component for mapping default props and props to state to streamline the controlled / uncontrolled component pattern.",
   "dependencies": {
     "conartist": "^0.15.1",
     "nodent": "^3.1.5"
